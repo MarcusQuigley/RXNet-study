@@ -16,6 +16,7 @@ namespace Chapter4
         public void OnCompleted()
         {
             Console.WriteLine($"{_name} Finished");
+            Console.WriteLine();
         }
 
         public void OnError(Exception error)
