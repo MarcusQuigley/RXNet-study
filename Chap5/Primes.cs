@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -62,6 +64,11 @@ namespace Chap5
             return true;
         }
 
+        public Task<IEnumerable<int>> GeneratePrimesAsync(int number)
+        {
+            return Task.Run<IEnumerable<int>>(()=>GeneratePrimes(number));
+        }
+
         public IEnumerable<int> GeneratePrimes(int number)
         {
             int _count = number;
@@ -79,6 +86,38 @@ namespace Chap5
                         yield break;
                 }
             }
+        }
+
+        public IObservable<int> GeneratePrimesObs(int amount)
+        {
+            return Observable.Create<int>(o =>
+            {
+                foreach (var item in GeneratePrimes(amount))
+                {
+                    o.OnNext(item);
+                }
+                o.OnCompleted();
+                return Disposable.Empty;
+            });
+
+        }
+
+        public IObservable<int> GeneratePrimesObs2(int amount)
+        {
+            //var cts = new CancellationTokenSource();
+            return Observable.Create<int>((o,ct) => {
+               return Task.Run(() =>
+                {
+                    foreach (var item in GeneratePrimes(amount))
+                    {
+                        //cts.Token.ThrowIfCancellationRequested();
+                        ct.ThrowIfCancellationRequested();
+                        o.OnNext(item);
+                    }
+                    o.OnCompleted();
+                });
+               // return new CancellationDisposable(cts);
+            });
         }
     }
 }
