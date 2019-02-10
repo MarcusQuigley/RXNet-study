@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using Utilities;
 namespace Chapter4
 {
     class Program
